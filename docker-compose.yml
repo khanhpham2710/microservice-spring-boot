@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  mysql:
+    image: mysql
+    ports:
+      - "3305:3306"
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: microservice
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - microservice:/var/lib/mysql
+    networks:
+      - microservice
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    command: start-dev
+    ports:
+      - "9090:8080"
+    restart: unless-stopped
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: mysql
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: password
+
+      KC_DB_URL: jdbc:mysql://mysql:3306/microservice
+      KC_FEATURES: token-exchange,admin-fine-grained-authz
+      KC_HOSTNAME: localhost
+    networks:
+      - microservice
+
+networks:
+  microservice:
+    driver: bridge
+
+volumes:
+  microservice:

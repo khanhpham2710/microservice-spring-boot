@@ -1,0 +1,20 @@
+spring:
+#  config:
+#    import: optional:configserver:http://localhost:8000
+  application:
+    name: authentication-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/microservice
+app:
+  keycloak:
+    admin:
+      clientId: microservice
+      clientSecret: 2jS2FqGxrtdCKCg6pzuvoqicGLUqBgRc
+    realm: microservice
+    serverUrl: http://localhost:9090
+
+server:
+  port: 8100
