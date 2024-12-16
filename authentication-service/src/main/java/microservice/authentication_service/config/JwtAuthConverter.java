@@ -1,7 +1,7 @@
 package microservice.authentication_service.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +22,8 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationToken> {
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+    @Value("${app.keycloak.admin.clientId}")
+    private String clientId;
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
@@ -45,8 +47,8 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
         Collection<String> resourceRoles;
         Collection<String> realmRoles ;
 
-        if(resourceAccess != null && resourceAccess.get("account") != null){
-            Map<String,Object> account =  (Map<String,Object>) resourceAccess.get("account");
+        if(resourceAccess != null && resourceAccess.get(clientId) != null){
+            Map<String,Object> account =  (Map<String,Object>) resourceAccess.get(clientId);
             if(account.containsKey("roles") ){
                 resourceRoles = (Collection<String>) account.get("roles");
                 allRoles.addAll(resourceRoles);

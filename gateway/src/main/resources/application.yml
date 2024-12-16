@@ -1,0 +1,69 @@
+spring:
+  config:
+    import: optional:configserver:http://localhost:8000
+  application:
+    name: gateway-service
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      default-filters:
+        - StripPrefix=2
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 10
+            redis-rate-limiter.burstCapacity: 20
+            redis-rate-limiter.requestedTokens: 1
+        - name: CircuitBreaker
+          args:
+            name: defaultCircuitBreaker
+            fallbackUri: forward:/fallbackRoute
+      routes:
+        - id: authentication-service
+          uri: lb:http://AUTHENTICATION-SERVICE
+          predicates:
+            - Path=/api/authentication/**
+  redis:
+    host: localhost
+    port: 6379
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator : true
+        slidingWindowType : COUNT_BASED
+        slidingWindowSize : 10
+        failureRateThreshold : 50
+        waitDurationInOpenState : 5s
+        permittedNumberOfCallsInHalfOpenState : 3
+        automaticTransitionFromOpenToHalfOpenEnabled : true
+        minimum-number-of-calls : 5
+
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 3s
+
+  retry:
+    configs:
+      default:
+        max-attempts : 3
+        wait-duration : 2s
+
+
+
+app:
+  keycloak:
+    admin:
+      clientId: microservice
+      clientSecret: 2jS2FqGxrtdCKCg6pzuvoqicGLUqBgRc
+    realm: microservice
+    serverUrl: http://localhost:9090
+
+server:
+  port: 8080

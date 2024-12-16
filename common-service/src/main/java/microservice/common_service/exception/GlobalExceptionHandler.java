@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.*;
@@ -53,9 +54,11 @@ public class GlobalExceptionHandler {
         Set<String> errors = new HashSet<>();
         exception.getBindingResult().getAllErrors().forEach(error -> {
             String message = error.getDefaultMessage();
+
             if (message != null && message.contains("{") && message.contains("}")) {
                 message = mapAttribute(message, (Map<String, Object>) error.unwrap(ConstraintViolation.class));
             }
+
             errors.add(message);
         });
 
@@ -79,21 +82,6 @@ public class GlobalExceptionHandler {
                         .errorCode(errorCode.getCode())
                         .message(errorCode.getMessage())
                         .build();
-    }
-
-
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundException(NotFoundException exception, WebRequest request) {
-        ErrorCode errorCode = exception.getErrorCode();
-        String message = errorCode.getMessage();
-
-        return ErrorResponse.builder()
-                .timestamp(new Date())
-                .path(request.getDescription(false).replace("uri=", ""))
-                .message(message)
-                .errorCode(errorCode.getCode())
-                .build();
     }
 
 
