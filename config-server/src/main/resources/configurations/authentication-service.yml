@@ -14,16 +14,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:9090/realms/microservice
 
 app:
   keycloak:
     admin:
       clientId: microservice
-      clientSecret: 2jS2FqGxrtdCKCg6pzuvoqicGLUqBgRc
+      clientSecret: 6dTqkrZIIoARcjzG3qjVfU0Sc77rConI
     realm: microservice
     serverUrl: http://localhost:9090
+    issuer-uri: "http://localhost:9090/realms/microservice"

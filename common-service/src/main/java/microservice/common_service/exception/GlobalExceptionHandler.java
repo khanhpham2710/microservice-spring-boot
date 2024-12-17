@@ -10,11 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.*;
-
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -46,6 +44,7 @@ public class GlobalExceptionHandler {
         }
         return errorResponse;
     }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -82,6 +81,18 @@ public class GlobalExceptionHandler {
                         .errorCode(errorCode.getCode())
                         .message(errorCode.getMessage())
                         .build();
+    }
+
+    @ExceptionHandler(value = NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFoundException(NotFoundException exception,WebRequest request) {
+
+        return ErrorResponse.builder()
+                .path(request.getDescription(false).replace("uri=", ""))
+                .timestamp(new Date())
+                .errorCode(HttpStatus.NOT_FOUND.value())
+                .message(exception.getMessage())
+                .build();
     }
 
 

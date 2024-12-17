@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_PARAM(1000,"Multiple invalid request",HttpStatus.BAD_REQUEST),
-    INVALID_EMAIL(1001, "Invalid email format", HttpStatus.BAD_REQUEST),
+
     INVALID_PASSWORD(1002, "Password must be at least {min} characters", HttpStatus.BAD_REQUEST),
     INVALID_DOB(1003, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
 
@@ -21,7 +21,10 @@ public enum ErrorCode {
 
     EMAIL_SEND_FAILED(1020,"Send email failed", HttpStatus.INTERNAL_SERVER_ERROR),
     UNAUTHENTICATED(1030, "Unauthenticated", HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED(1040, "You do not have permission", HttpStatus.FORBIDDEN);
+    UNAUTHORIZED(1040, "You do not have permission", HttpStatus.FORBIDDEN),
+
+    PURCHASE_EXCEPTION(1050, "Purchase exception", HttpStatus.BAD_REQUEST);
+
 
     private int code;
     private String message;

@@ -1,6 +1,7 @@
 package microservice.authentication_service.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import microservice.authentication_service.models.Role;
 import microservice.authentication_service.models.UserRecord;
 import microservice.authentication_service.response.LoginResponse;
@@ -9,8 +10,10 @@ import microservice.authentication_service.service.UserService;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Log4j2
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
@@ -68,6 +71,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserGroups(id));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/hello")
     public ResponseEntity<?> getTest() {
         return ResponseEntity.status(HttpStatus.OK).body("Successful");

@@ -18,6 +18,7 @@ import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.admin.client.token.TokenManager;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -126,29 +127,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse login(UserRecord userRecord) {
         UserRepresentation userRepresentation = getUserByUsername(userRecord.email());
-
+        Keycloak keycloakClient = KeycloakBuilder.builder()
+                .serverUrl(serverUrl)
+                .realm(realm)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .grantType(OAuth2Constants.PASSWORD)
+                .username(userRecord.email())
+                .password(userRecord.password())
+                .build();
         try {
-            Keycloak keycloakClient = KeycloakBuilder.builder()
-                    .serverUrl(serverUrl)
-                    .realm(realm)
-                    .clientId(clientId)
-                    .clientSecret(clientSecret)
-                    .grantType(OAuth2Constants.PASSWORD)
-                    .username(userRecord.email())
-                    .password(userRecord.password())
-                    .build();
-            TokenManager tokenResponse = keycloakClient.tokenManager();
-            String accessToken = tokenResponse.getAccessToken().getToken();
-            String refreshToken = tokenResponse.refreshToken().getRefreshToken();
+            AccessTokenResponse tokenSet = keycloakClient.tokenManager().grantToken();
             String id = userRepresentation.getId();
-            return new LoginResponse(id,accessToken,refreshToken);
-        } catch (Exception e){
-            if (e instanceof NotAuthorizedException){
-                throw new AppException(ErrorCode.WRONG_AUTHENTICATION);
-            } else {
-                throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
-            }
+            return new LoginResponse(id, tokenSet.getToken(), tokenSet.getRefreshToken());
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
+        return null;
     }
 
 
