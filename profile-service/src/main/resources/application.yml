@@ -1,0 +1,19 @@
+spring:
+  config:
+    import: optional:configserver:http://localhost:8000
+  application:
+    name: profile-service
+  neo4j:
+    uri: bolt://localhost:7687
+    authentication:
+      username: neo4j
+      password: password
+
+app:
+  keycloak:
+    admin:
+      clientId: microservice
+      clientSecret: 6dTqkrZIIoARcjzG3qjVfU0Sc77rConI
+    realm: microservice
+    serverUrl: http://localhost:9090
+    issuer-uri: "http://localhost:9090/realms/microservice"

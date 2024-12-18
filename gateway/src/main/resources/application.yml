@@ -33,6 +33,11 @@ spring:
           predicates:
             - Path=/api/authentication/**
 
+        - id: profile-service
+          uri: lb:http://PROFILE-SERVICE
+          predicates:
+            - Path=/api/profile/**
+
         - id: product-service
           uri: lb:http://PRODUCT-SERVICE
           predicates:

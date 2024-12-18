@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = "microservice")
+@ComponentScan({"microservice.common_service","microservice.authentication_service"})
 public class AuthenticationServiceApplication {
 
 	public static void main(String[] args) {

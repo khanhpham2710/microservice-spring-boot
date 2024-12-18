@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 import java.util.Objects;
 
 @SpringBootApplication
-@ComponentScan("microservice")
+@ComponentScan({"microservice.common_service","microservice.gateway"})
 public class GatewayApplication {
 
 	public static void main(String[] args) {

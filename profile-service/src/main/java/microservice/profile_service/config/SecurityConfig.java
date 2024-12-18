@@ -1,6 +1,7 @@
-package microservice.product_service.config;
+package microservice.profile_service.config;
 
 import lombok.RequiredArgsConstructor;
+import microservice.profile_service.mapper.DtoMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +27,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
-                .requestMatchers("/**").permitAll());
+                .requestMatchers("/**").permitAll()
+                .requestMatchers("/role/**").hasRole("ADMIN"));
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthConverter))

@@ -7,7 +7,9 @@ import microservice.product_service.dto.product.ProductResponse;
 import microservice.product_service.dto.purchase.PurchaseRequest;
 import microservice.product_service.dto.purchase.PurchaseResponse;
 import microservice.product_service.service.ProductService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,5 +44,11 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductResponse>> findAll() {
         return ResponseEntity.ok(productService.findAll());
+    }
+
+    @GetMapping("/hello")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> test() {
+        return ResponseEntity.status(HttpStatus.OK).body("Heloo");
     }
 }

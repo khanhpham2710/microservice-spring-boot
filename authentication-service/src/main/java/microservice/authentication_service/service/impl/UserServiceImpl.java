@@ -25,6 +25,7 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -184,12 +185,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     @Override
     public UserResource getUserById(String userId) {
         UsersResource usersResource = getUsersResource();
         return usersResource.get(userId);
     }
+
 
     @Override
     public UserRepresentation getUserByUsername(String username) {

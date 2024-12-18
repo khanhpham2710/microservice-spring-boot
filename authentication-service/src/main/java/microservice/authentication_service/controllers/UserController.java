@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+
 @Log4j2
 @RestController
 @RequestMapping
@@ -26,6 +27,12 @@ public class UserController {
         UserRepresentation user = userService.createUser(userRecord);
         roleService.assignRole(user.getId(), Role.USER);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+//    @PostAuthorize("returnValue.id == #userId")
+    @GetMapping("/{userId}")
+    public UserRepresentation getUserById(@PathVariable String userId) {
+        return userService.getUserById(userId).toRepresentation();
     }
 
     @PostMapping("/login")
@@ -71,9 +78,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserGroups(id));
     }
 
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/hello")
-    public ResponseEntity<?> getTest() {
-        return ResponseEntity.status(HttpStatus.OK).body("Successful");
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> test() {
+        return ResponseEntity.status(HttpStatus.OK).body("Heloo");
     }
 }
