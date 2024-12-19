@@ -15,11 +15,16 @@ public class DtoMapper {
                 .firstName(userDTO.getFirstName())
                 .lastName(userDTO.getLastName())
                 .language(userDTO.getLanguage())
+                .address(userDTO.getAddress())
                 .gender(userDTO.getGender())
                 .email(userDTO.getEmail())
                 .build();
     };
     public UserDTO map(User user){
+        if (user == null) {
+            return null;
+        }
+
         return UserDTO.builder()
                 .id(user.getId())
                 .dob(user.getDob())
@@ -28,6 +33,7 @@ public class DtoMapper {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .language(user.getLanguage())
+                .address(user.getAddress())
                 .gender(user.getGender())
                 .email(user.getEmail())
                 .build();

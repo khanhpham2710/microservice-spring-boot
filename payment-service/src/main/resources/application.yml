@@ -3,3 +3,28 @@ spring:
     import: optional:configserver:http://localhost:8000
   application:
     name: payment-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/microservice?createDatabaseIfNotExist=true
+    username: root
+    password: Bin@2710
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  flyway:
+    baseline-on-migrate: true
+    enabled: true
+    baseline-description: "init"
+    baseline-version: 0
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+
+app:
+  keycloak:
+    admin:
+      clientId: microservice
+    issuer-uri: "http://localhost:9090/realms/microservice"

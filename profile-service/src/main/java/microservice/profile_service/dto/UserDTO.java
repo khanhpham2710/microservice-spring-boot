@@ -1,6 +1,7 @@
 package microservice.profile_service.dto;
 
 import lombok.*;
+import microservice.profile_service.model.Address;
 import microservice.profile_service.model.enums.Gender;
 import microservice.profile_service.model.enums.Role;
 
@@ -17,6 +18,7 @@ public class UserDTO {
     private String lastName;
     private String language;
     private String email;
+    private Address address;
     private Role role;
     private LocalDate dob;
     private String countryIso2;

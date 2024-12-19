@@ -27,6 +27,8 @@ public class User {
 
     private String email;
 
+    private Address address;
+
     private Role role;
 
     private LocalDate dob;

@@ -18,6 +18,7 @@ CREATE TABLE products (
    category_id INT DEFAULT NULL,
    created_by VARCHAR(255) DEFAULT "admin",
    last_update_by INT,
+   updated_by varchar(255) DEFAULT "admin",
    PRIMARY KEY (id),
    CONSTRAINT FK_category FOREIGN KEY (category_id) REFERENCES categories (id)
 );
