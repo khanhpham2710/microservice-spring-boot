@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -25,24 +26,23 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true,  nullable = false)
-    private String reference;
-
+    @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
+    @Column(name = "customer_id")
     private String customerId;
 
-    @OneToMany(mappedBy = "order")
-    private List<OrderLine> orderLines;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderLine> orderLines = new ArrayList<>();
 
     @CreatedDate
-    @Column(updatable = false, nullable = false)
+    @Column(name = "created_date", updatable = false, nullable = false)
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    @Column(insertable = false)
+    @Column(name = "last_modified_date", insertable = false)
     private LocalDateTime lastModifiedDate;
 }

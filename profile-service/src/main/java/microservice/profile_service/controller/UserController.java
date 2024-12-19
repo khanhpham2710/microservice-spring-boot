@@ -3,6 +3,7 @@ package microservice.profile_service.controller;
 import lombok.RequiredArgsConstructor;
 import microservice.profile_service.dto.UserDTO;
 import microservice.profile_service.mapper.DtoMapper;
+import microservice.profile_service.model.User;
 import microservice.profile_service.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,9 +38,8 @@ public class UserController{
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO>  updateUser(@PathVariable String id,@RequestBody UserDTO user){
-
-        userService.update(mapper.map(user),id);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        User updatedUser = userService.update(mapper.map(user),id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(mapper.map(updatedUser));
     }
 
     @PutMapping(value = "/{id}/upload-profile-picture",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

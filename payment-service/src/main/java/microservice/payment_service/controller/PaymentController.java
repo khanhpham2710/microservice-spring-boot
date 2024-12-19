@@ -5,18 +5,16 @@ import lombok.RequiredArgsConstructor;
 import microservice.payment_service.dto.PaymentRequest;
 import microservice.payment_service.service.PaymentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/payments")
+@RequestMapping
 @RequiredArgsConstructor
 public class PaymentController {
-
     private final PaymentService service;
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ResponseEntity<Integer> createPayment(
             @RequestBody @Valid PaymentRequest request

@@ -11,11 +11,10 @@ import java.util.List;
 @RequestMapping("orders")
 @RequiredArgsConstructor
 public class OrderController {
-
     private final OrderService service;
 
     @PostMapping
-    public ResponseEntity<Integer> createOrder(
+    public ResponseEntity<Order> createOrder(
             @RequestBody @Valid OrderRequest request
     ) throws Exception {
         return ResponseEntity.ok(service.createOrder(request));

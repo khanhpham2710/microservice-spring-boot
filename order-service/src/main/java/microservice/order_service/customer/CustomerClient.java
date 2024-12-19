@@ -12,5 +12,5 @@ import java.util.Optional;
 @FeignClient(name = "profile-service",configuration = FeignClientConfig.class)
 public interface CustomerClient {
     @GetMapping("/{userId}")
-    Optional<CustomerResponse> findCustomerById(@PathVariable("customer-id") String customerId);
+    Optional<CustomerResponse> findCustomerById(@PathVariable("userId") String userId);
 }
