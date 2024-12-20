@@ -15,13 +15,13 @@ spring:
       ddl-auto: update
     show-sql: true
 
-  flyway:
-    baseline-on-migrate: true
-    enabled: true
-    baseline-description: "init"
-    baseline-version: 0
-    user: ${spring.datasource.username}
-    password: ${spring.datasource.password}
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: paymentConfirmation:microservice.payment_service.notification.PaymentNotificationRequest
 
 app:
   keycloak:

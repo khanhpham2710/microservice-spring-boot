@@ -39,12 +39,12 @@ public class User {
 
     private String language;
 
-    @Relationship(type = "FRIEND")
-    public Set<User> friends = new HashSet<>();
+    @Relationship(type = "FRIEND", direction = Relationship.Direction.OUTGOING)
+    private Set<User> friends = new HashSet<>();
 
-    @Relationship(type = "FOLLOW")
-    public Set<User> following = new HashSet<>();
+    @Relationship(type = "FOLLOW", direction = Relationship.Direction.OUTGOING)
+    private Set<User> following = new HashSet<>();
 
-    @Relationship(type = "FOLLOWED")
-    public Set<User> followers = new HashSet<>();
+    @Relationship(type = "FOLLOWED", direction = Relationship.Direction.INCOMING)
+    private Set<User> followers = new HashSet<>();
 }

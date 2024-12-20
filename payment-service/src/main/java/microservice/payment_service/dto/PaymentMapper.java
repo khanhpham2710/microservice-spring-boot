@@ -13,7 +13,7 @@ public class PaymentMapper {
         return Payment.builder()
                 .id(request.id())
                 .paymentMethod(request.paymentMethod())
-                .amount(request.amount())
+                .amount(request.totalAmount())
                 .orderId(request.orderId())
                 .build();
     }

@@ -42,6 +42,16 @@ spring:
           uri: lb:http://PRODUCT-SERVICE
           predicates:
             - Path=/api/product/**
+
+        - id: payment-service
+          uri: lb:http://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/payment/**
+
+        - id: order-service
+          uri: lb:http://ORDER-SERVICE
+          predicates:
+            - Path=/api/order/**
   redis:
     host: localhost
     port: 6379

@@ -1,4 +1,4 @@
-package microservice.payment_service.notification;
+package microservice.order_service.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -10,13 +10,13 @@ import static org.springframework.kafka.support.KafkaHeaders.TOPIC;
 
 @Service
 @RequiredArgsConstructor
-public class NotificationProducer {
-    private final KafkaTemplate<String, PaymentNotificationRequest> kafkaTemplate;
+public class OrderProducer {
+    private final KafkaTemplate<String, OrderConfirmation> kafkaTemplate;
 
-    public void sendNotification(PaymentNotificationRequest request) {
-        Message<PaymentNotificationRequest> message = MessageBuilder
-                .withPayload(request)
-                .setHeader(TOPIC, "payment-topic")
+    public void sendOrderConfirmation(OrderConfirmation orderConfirmation) {
+        Message<OrderConfirmation> message = MessageBuilder
+                .withPayload(orderConfirmation)
+                .setHeader(TOPIC, "order-topic")
                 .build();
 
         kafkaTemplate.send(message);

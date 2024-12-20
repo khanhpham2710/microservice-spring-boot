@@ -1,5 +1,6 @@
 package microservice.order_service.product;
 
+import microservice.common_service.model.PurchaseResponse;
 import microservice.order_service.config.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

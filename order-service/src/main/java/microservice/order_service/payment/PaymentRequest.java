@@ -6,9 +6,10 @@ import microservice.order_service.customer.CustomerResponse;
 import java.math.BigDecimal;
 
 public record PaymentRequest(
-        BigDecimal amount,
+        BigDecimal totalAmount,
+        BigDecimal amountReceive,
         PaymentMethod paymentMethod,
-        Integer orderId,
+        Long orderId,
         CustomerResponse customer
 ) {
 }

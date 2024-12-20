@@ -1,7 +1,7 @@
 package microservice.order_service.orderline;
 
 public record OrderLineRequest(
-        Integer orderId,
+        Long orderId,
         Integer productId,
         double quantity
 ) {

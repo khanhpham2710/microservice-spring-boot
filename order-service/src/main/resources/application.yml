@@ -8,11 +8,20 @@ spring:
     username: root
     password: Bin@2710
     driver-class-name: com.mysql.cj.jdbc.Driver
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: orderConfirmation:microservice.order_service.kafka.OrderConfirmation
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQLDialect
 
 app:
   keycloak:

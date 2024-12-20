@@ -31,7 +31,8 @@ public class OrderMapper {
                 order.getTotalAmount(),
                 order.getPaymentMethod(),
                 orderLines,
-                order.getCustomerId()
+                order.getCustomerId(),
+                order.getAddress()
         );
     }
 }

@@ -10,11 +10,12 @@ import java.util.List;
 
 @JsonInclude(Include.NON_EMPTY)
 public record OrderResponse(
-        Integer id,
+        Long id,
         BigDecimal amount,
         PaymentMethod paymentMethod,
         List<OrderLineResponse> orderlines,
-        String customerId
+        String customerId,
+        Address address
 ) {
 
 }

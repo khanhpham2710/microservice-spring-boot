@@ -1,18 +1,17 @@
-package microservice.order_service.kafka;
+package microservice.notification_service.kafka.order;
 
 import microservice.common_service.enums.PaymentMethod;
 import microservice.common_service.model.PurchaseResponse;
-import microservice.order_service.customer.CustomerResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public record OrderConfirmation (
+public record OrderConfirmation(
         Long id,
         BigDecimal totalAmount,
         BigDecimal amountReceive,
         PaymentMethod paymentMethod,
-        CustomerResponse customer,
+        Customer customer,
         List<PurchaseResponse> products
 ) {
 }

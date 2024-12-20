@@ -24,7 +24,7 @@ import java.util.List;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
@@ -34,6 +34,9 @@ public class Order {
 
     @Column(name = "customer_id")
     private String customerId;
+
+    @Embedded
+    private Address address;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderLine> orderLines = new ArrayList<>();
