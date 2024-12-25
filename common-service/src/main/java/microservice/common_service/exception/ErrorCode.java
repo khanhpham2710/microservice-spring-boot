@@ -23,7 +23,13 @@ public enum ErrorCode {
     UNAUTHENTICATED(1030, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1040, "You do not have permission", HttpStatus.FORBIDDEN),
 
-    PURCHASE_EXCEPTION(1050, "Purchase exception", HttpStatus.BAD_REQUEST);
+    PURCHASE_EXCEPTION(1050, "Purchase exception", HttpStatus.BAD_REQUEST),
+    ADMIN_CHAT_EXCEPTION(1060, "This is an chat admin function", HttpStatus.BAD_REQUEST),
+    USER_CHAT_EXCEPTION(1061, "You are not a part of this chat", HttpStatus.BAD_REQUEST),
+    MAX_SIZE_IMAGE(1070,"Max file size is 2MB",HttpStatus.BAD_REQUEST),
+    UNALLOWED_FILE_EXTENSION(1071,"Only jpg, png, gif, bmp files are allowed",HttpStatus.BAD_REQUEST),
+    UPLOAD_IMAGE_FAIL(1072,"Failed to upload file",HttpStatus.INTERNAL_SERVER_ERROR),
+    DELETE_IMAGE_FAIL(1073,"Failed to delete file",HttpStatus.INTERNAL_SERVER_ERROR);;
 
 
     private int code;

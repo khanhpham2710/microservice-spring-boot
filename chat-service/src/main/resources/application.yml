@@ -1,5 +1,20 @@
 spring:
-  config:
-    import: optional:configserver:http://localhost:8000
+#  config:
+#    import: optional:configserver:http://localhost:8000
   application:
     name: chat-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/chat_service
+
+jwt:
+  secret: secret
+
+server:
+  port: 8700
+
+app:
+  keycloak:
+    admin:
+      clientId: microservice
+    issuer-uri: "http://localhost:9090/realms/microservice"
