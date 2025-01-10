@@ -32,6 +32,7 @@ services:
 
   redis:
     image: redis:6.2-alpine
+    hostname: redis
     restart: always
     ports:
       - '6379:6379'
@@ -39,6 +40,11 @@ services:
       - redis-data:/data
     networks:
       - microservice
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   neo4j:
     image: neo4j:latest
@@ -85,6 +91,93 @@ services:
     networks:
       - microservice
 
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-data:/data/db
+
+  config-server:
+    build:
+      context: .
+      dockerfile: config-server/Dockerfile
+    hostname: config-server
+    ports:
+      - "8000:8000"
+    networks:
+      - microservice
+
+  discovery-service:
+    build:
+      context: .
+      dockerfile: discovery-service/Dockerfile
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-server
+    networks:
+      - microservice
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - config-server
+      - discovery-service
+      - keycloak
+      - redis
+    networks:
+      - microservice
+
+  authentication-service:
+    build:
+      context: .
+      dockerfile: authentication-service/Dockerfile
+    ports:
+      - "8100:8100"
+    depends_on:
+      - config-server
+      - discovery-service
+      - keycloak
+      - mysql
+    networks:
+      - microservice
+
+  profile-service:
+    build:
+      context: .
+      dockerfile: profile-service/Dockerfile
+    ports:
+      - "8200:8200"
+    depends_on:
+      - config-server
+      - discovery-service
+      - keycloak
+      - neo4j
+    networks:
+      - microservice
+
+  product-service:
+    build:
+      context: .
+      dockerfile: product-service/Dockerfile
+    ports:
+      - "8300:8300"
+    depends_on:
+      - config-server
+      - discovery-service
+      - keycloak
+      - mysql
+    networks:
+      - microservice
+
 networks:
   microservice:
     driver: bridge
@@ -96,4 +189,4 @@ volumes:
   neo4j-logs:
   neo4j-config:
   neo4j-plugins:
-  microservice:
+  mongo-data:

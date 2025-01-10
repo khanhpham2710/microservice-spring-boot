@@ -1,16 +1,20 @@
 spring:
   config:
-    import: optional:configserver:http://localhost:8000
+    import: optional:configserver:http://config-server:8000
   application:
     name: gateway-service
   main:
     web-application-type: reactive
     allow-bean-definition-overriding: true
+  data:
+    redis:
+      host: redis
+      port: 6379
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: "http://localhost:9090/realms/microservice"
+          issuer-uri: "http://keycloak:8080/realms/microservice"
   cloud:
     gateway:
       discovery:
@@ -28,57 +32,119 @@ spring:
             name: defaultCircuitBreaker
             fallbackUri: forward:/fallbackRoute
       routes:
+        # Authentication Service route
         - id: authentication-service
-          uri: lb:http://AUTHENTICATION-SERVICE
+          uri: lb://AUTHENTICATION-SERVICE
           predicates:
             - Path=/api/authentication/**
 
+        # Authentication Swagger route
+        - id: authentication-service-swagger
+          uri: lb://AUTHENTICATION-SERVICE
+          predicates:
+            - Path=/aggregate/authentication-service/v3/api-docs
+
+        # Profile Service route
         - id: profile-service
-          uri: lb:http://PROFILE-SERVICE
+          uri: lb://PROFILE-SERVICE
           predicates:
             - Path=/api/profile/**
 
+        # Profile Swagger route
+        - id: profile-service-swagger
+          uri: lb://PROFILE-SERVICE
+          predicates:
+            - Path=/aggregate/profile-service/v3/api-docs
+
+        # Product Service route
         - id: product-service
-          uri: lb:http://PRODUCT-SERVICE
+          uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/api/product/**
 
+        # Product Swagger route
+        - id: product-service-swagger
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/aggregate/product-service/v3/api-docs
+
+        # Payment Service route
         - id: payment-service
-          uri: lb:http://PAYMENT-SERVICE
+          uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/api/payment/**
 
+        # Payment Swagger route
+        - id: payment-service-swagger
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/aggregate/payment-service/v3/api-docs
+
+        # Order Service route
         - id: order-service
-          uri: lb:http://ORDER-SERVICE
+          uri: lb://ORDER-SERVICE
           predicates:
             - Path=/api/order/**
-  redis:
-    host: localhost
-    port: 6379
+
+        # Order Swagger route
+        - id: order-service-swagger
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/aggregate/order-service/v3/api-docs
 
 resilience4j:
   circuitbreaker:
     configs:
       default:
-        registerHealthIndicator : true
-        slidingWindowType : COUNT_BASED
-        slidingWindowSize : 10
-        failureRateThreshold : 50
-        waitDurationInOpenState : 5s
-        permittedNumberOfCallsInHalfOpenState : 3
-        automaticTransitionFromOpenToHalfOpenEnabled : true
-        minimum-number-of-calls : 5
-
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 20
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        minimum-number-of-calls: 5
   timelimiter:
     configs:
       default:
-        timeout-duration: 3s
-
+        timeout-duration: 10s
   retry:
     configs:
       default:
-        max-attempts : 3
-        wait-duration : 2s
+        max-attempts: 3
+        wait-duration: 2s
 
 server:
   port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Authentication Service
+        url: /aggregate/authentication-service/v3/api-docs
+      - name: Profile Service
+        url: /aggregate/profile-service/v3/api-docs
+      - name: Product Service
+        url: /aggregate/product-service/v3/api-docs
+      - name: Payment Service
+        url: /aggregate/payment-service/v3/api-docs
+      - name: Order Service
+        url: /aggregate/order-service/v3/api-docs
+  api-docs:
+    path: /api-docs
+
+eureka:
+  instance:
+    hostname: discovery-service
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka/
+    registerWithEureka: true
+    fetchRegistry: true
+
+logging:
+  level:
+    org.springframework.cloud.client.discovery: DEBUG
+    org.springframework.cloud.loadbalancer: DEBUG
+    org.springframework: DEBUG

@@ -1,19 +1,30 @@
 spring:
   config:
-    import: optional:configserver:http://localhost:8000
+    import: optional:configserver:http://config-server:8000
   application:
     name: profile-service
   neo4j:
-    uri: bolt://localhost:7687
+    uri: bolt://neo4j:7687
     authentication:
       username: neo4j
       password: password
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://keycloak:8080/realms/microservice"
 
 app:
   keycloak:
     admin:
       clientId: microservice
-      clientSecret: 6dTqkrZIIoARcjzG3qjVfU0Sc77rConI
-    realm: microservice
-    serverUrl: http://localhost:9090
-    issuer-uri: "http://localhost:9090/realms/microservice"
+    issuer-uri: "http://keycloak:8080/realms/microservice"
+
+eureka:
+  instance:
+    hostname: discovery-service
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka/
+    registerWithEureka: true
+    fetchRegistry: true

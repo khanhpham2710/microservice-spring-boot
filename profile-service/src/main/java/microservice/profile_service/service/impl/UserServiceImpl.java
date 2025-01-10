@@ -6,6 +6,7 @@ import microservice.common_service.exception.AppException;
 import microservice.common_service.exception.ErrorCode;
 import microservice.common_service.exception.NotFoundException;
 import microservice.profile_service.dto.KeycloakUser;
+import microservice.profile_service.dto.UserCreationRequest;
 import microservice.profile_service.model.User;
 import microservice.profile_service.proxy.AuthProxy;
 import microservice.profile_service.repository.UserRepository;
@@ -15,6 +16,8 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashSet;
 
 
 @Slf4j
@@ -26,28 +29,36 @@ public class UserServiceImpl implements UserService {
 
     @PostAuthorize("hasRole('USER')")
     @Override
-    public User save(User user) {
-        if (userRepository.existsById(user.getId())){
+    public User save(String userId, UserCreationRequest request) {
+        if (userRepository.existsById(userId)){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
-        User newUser = userRepository.save(user);
-        KeycloakUser keycloakUser = authProxy.getUserById(newUser.getId());
-        newUser.setFirstName(keycloakUser.getFirstName());
-        newUser.setLastName(keycloakUser.getLastName());
-        newUser.setEmail(keycloakUser.getEmail());
-        newUser.setId(keycloakUser.getId());
-        return userRepository.save(user);
+        KeycloakUser keycloakUser = authProxy.getUserById(userId);
+
+        User newUser = User.builder()
+                .firstName(keycloakUser.getFirstName())
+                .lastName(keycloakUser.getLastName())
+                .id(userId)
+                .email(keycloakUser.getEmail())
+                .dob(request.getDob())
+                .gender(request.getGender())
+                .language(request.getLanguage())
+                .address(request.getAddress())
+                .followers(new HashSet<>())
+                .following(new HashSet<>())
+                .friends(new HashSet<>())
+                .build();
+        return userRepository.save(newUser);
     }
 
     @PostAuthorize("hasRole('USER')")
     @Override
-    public User update(User user, String userId) {
+    public User update(String userId, UserCreationRequest request) {
         User existingUser = getById(userId);
-        existingUser.setDob(user.getDob());
-        existingUser.setCountryIso2(user.getCountryIso2());
-        existingUser.setLanguage(user.getLanguage());
-        existingUser.setGender(user.getGender());
-        existingUser.setAddress(user.getAddress());
+        existingUser.setDob(request.getDob());
+        existingUser.setLanguage(request.getLanguage());
+        existingUser.setGender(request.getGender());
+        existingUser.setAddress(request.getAddress());
 
 //        existingUser.setFirstName(user.getFirstName());
 //        existingUser.setLastName(user.getLastName());

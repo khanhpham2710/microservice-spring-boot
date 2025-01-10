@@ -21,9 +21,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     private final JwtAuthConverter jwtAuthConverter;
 
-    @Value("${app.keycloak.issuer-uri}")
-    private String issuerURI;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
@@ -39,10 +36,5 @@ public class SecurityConfig {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
-    }
-
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        return JwtDecoders.fromIssuerLocation(issuerURI);
     }
 }

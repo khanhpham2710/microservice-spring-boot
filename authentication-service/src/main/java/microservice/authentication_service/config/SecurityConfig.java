@@ -19,29 +19,37 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthConverter jwtAuthConverter;
-    @Value("${app.keycloak.issuer-uri}")
-    private String issuerURI;
+
+    private static final String[] WHITE_LIST_URL = {
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-ui.html",
+            "/**"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request -> request
-                .requestMatchers("/**").permitAll()
-                .requestMatchers("/role/**").hasRole("ADMIN"));
-
-        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthConverter))
-                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                .accessDeniedHandler(new CustomAccessDeniedHandler())
-        ).sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(WHITE_LIST_URL).permitAll()
+                        .requestMatchers("/role/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthConverter))
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                        .accessDeniedHandler(new CustomAccessDeniedHandler())
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable);
 
         return httpSecurity.build();
-    }
-
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        return JwtDecoders.fromIssuerLocation(issuerURI);
     }
 }

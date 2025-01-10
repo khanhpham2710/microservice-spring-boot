@@ -12,17 +12,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDTO {
-    private String id;
+public class UserCreationRequest {
     private String language;
-    private String email;
     private Address address;
-    private Role role;
     private LocalDate dob;
-    private String countryIso2;
     private Gender gender;
-
 //    private StorageProvider storageProvider;
 }
-
-

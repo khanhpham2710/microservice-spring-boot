@@ -33,8 +33,6 @@ public class User {
 
     private LocalDate dob;
 
-    private String countryIso2;
-
     private Gender gender;
 
     private String language;
