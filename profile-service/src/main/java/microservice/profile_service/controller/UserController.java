@@ -1,6 +1,7 @@
 package microservice.profile_service.controller;
 
 import lombok.RequiredArgsConstructor;
+import microservice.profile_service.dto.UserCreationRequest;
 import microservice.profile_service.dto.UserDTO;
 import microservice.profile_service.mapper.DtoMapper;
 import microservice.profile_service.model.User;
@@ -18,10 +19,11 @@ public class UserController{
     private  final UserService userService;
     private  final DtoMapper mapper;
 
-    @PostMapping("/users")
-    public ResponseEntity<UserDTO>  saveUser(@RequestBody UserDTO user){
-        userService.save(mapper.map(user));
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PostMapping("/create/{id}")
+    public ResponseEntity<UserDTO>  createUser(@PathVariable String id, @RequestBody UserCreationRequest request){
+        User newUser = userService.save(id,request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(mapper.map(newUser));
     }
 
     @GetMapping("/{id}")
@@ -29,15 +31,16 @@ public class UserController{
         return ResponseEntity.ok(mapper.map(userService.getById(id)));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void  deleteUserById(@PathVariable String id){
+    public String deleteUserById(@PathVariable String id){
         userService.deleteUserById(id);
+        return "User deleted";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDTO>  updateUser(@PathVariable String id,@RequestBody UserDTO user){
-        User updatedUser = userService.update(mapper.map(user),id);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<UserDTO>  updateUser(@PathVariable String id,@RequestBody UserCreationRequest request){
+        User updatedUser = userService.update(id,request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(mapper.map(updatedUser));
     }
 

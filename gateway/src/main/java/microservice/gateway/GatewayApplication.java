@@ -22,4 +22,5 @@ public class GatewayApplication {
 		return exchange -> Mono.just(Objects.requireNonNull(exchange.getRequest()
 				.getRemoteAddress()).getAddress().getHostAddress());
 	}
+
 }

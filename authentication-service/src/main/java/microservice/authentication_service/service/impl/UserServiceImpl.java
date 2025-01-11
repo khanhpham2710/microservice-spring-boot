@@ -2,10 +2,12 @@ package microservice.authentication_service.service.impl;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import microservice.authentication_service.models.ChangePasswordRequest;
 import microservice.authentication_service.models.KeyCloakResponse;
+import microservice.authentication_service.models.UpdateUserRecord;
 import microservice.authentication_service.models.UserRecord;
 import microservice.authentication_service.response.LoginResponse;
 import microservice.authentication_service.service.UserService;
@@ -14,10 +16,8 @@ import microservice.common_service.exception.ErrorCode;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
-import org.keycloak.admin.client.token.TokenManager;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.GroupRepresentation;
@@ -25,12 +25,13 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -99,6 +100,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserRepresentation updateUser(UpdateUserRecord request, String userId) {
+        UsersResource userResource = getUsersResource();
+
+        UserRepresentation existingUser = userResource.get(userId).toRepresentation();
+        if (existingUser == null) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+
+        existingUser.setFirstName(request.firstName());
+        existingUser.setLastName(request.lastName());
+        userResource.get(userId).update(existingUser);
+
+        return existingUser;
+    }
+
+    @Override
+    public void changePassword(String userId, ChangePasswordRequest request) {
+        UsersResource userResource = getUsersResource();
+        String password= request.getPassword();
+
+        if (!Objects.equals(password, request.getConfirmPassword())){
+            throw new AppException(ErrorCode.PASSWORD_NOT_EQUAL);
+        }
+
+        UserRepresentation existingUser = userResource.get(userId).toRepresentation();
+        CredentialRepresentation newCredential = new CredentialRepresentation();
+        newCredential.setType(CredentialRepresentation.PASSWORD);
+        newCredential.setValue(password);
+        existingUser.setCredentials(Collections.singletonList(newCredential));
+
+        userResource.get(userId).update(existingUser);
+    }
+
+    @Override
     public void deleteUser(String userId) {
         UsersResource usersResource = getUsersResource();
         try {
@@ -142,7 +177,11 @@ public class UserServiceImpl implements UserService {
             String id = userRepresentation.getId();
             return new LoginResponse(id, tokenSet.getToken(), tokenSet.getRefreshToken());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            if (exception instanceof BadRequestException){
+                throw new AppException(ErrorCode.NOT_VERIFY_EMAIL);
+            } else {
+                exception.printStackTrace();
+            }
         }
         return null;
     }
@@ -185,9 +224,16 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @PreAuthorize("hasRole('USER')")
     @Override
     public UserResource getUserById(String userId) {
+//        if (!userId.equals(SecurityContextHolder.getContext().getAuthentication().getName())){
+//            throw new AccessDeniedException("You don't have permission to access this user");
+//        }
         UsersResource usersResource = getUsersResource();
+        if (usersResource.get(userId) == null){
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
         return usersResource.get(userId);
     }
 
@@ -213,6 +259,7 @@ public class UserServiceImpl implements UserService {
     public List<GroupRepresentation> getUserGroups(String userId) {
         return getUserById(userId).groups();
     }
+
 
     private UsersResource getUsersResource() {
         return keycloak.realm(realm).users();

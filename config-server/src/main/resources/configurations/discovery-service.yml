@@ -1,11 +1,15 @@
-eureka:
-  instance:
-    hostname: localhost
-  client:
-    registerWithEureka: false
-    fetchRegistry: false
-    serviceUrl:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
-
 server:
   port: 8761
+
+eureka:
+  instance:
+    hostname: ${DISCOVERY_HOST:localhost}
+    preferIpAddress: ${PREFER_IP_ADDRESS:false}
+  client:
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+spring:
+  cloud:
+    config:
+      override-system-properties: false

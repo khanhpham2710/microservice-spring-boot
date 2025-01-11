@@ -1,24 +1,28 @@
 package microservice.authentication_service.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import microservice.authentication_service.models.ChangePasswordRequest;
 import microservice.authentication_service.models.Role;
+import microservice.authentication_service.models.UpdateUserRecord;
 import microservice.authentication_service.models.UserRecord;
 import microservice.authentication_service.response.LoginResponse;
 import microservice.authentication_service.service.RoleService;
 import microservice.authentication_service.service.UserService;
+import microservice.common_service.response.BaseResponse;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
-@Log4j2
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
 public class UserController {
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final RoleService roleService;
 
@@ -58,7 +62,23 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        BaseResponse<String> response = BaseResponse.<String>builder()
+                .message("User deleted successfully")
+                .data("")
+                .build();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+
+    @PutMapping("/update-name/{userId}")
+    public ResponseEntity<String> updateUsername(@Valid @RequestBody UpdateUserRecord request, @PathVariable String userId) {
+        userService.updateUser(request, userId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Update first name and last name successfully");
+    }
+
+    @PutMapping("/change-password/{userId}")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request, @PathVariable String userId) {
+        userService.changePassword(userId, request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Update password successfully");
     }
 
 
@@ -79,7 +99,7 @@ public class UserController {
     }
 
     @GetMapping("/hello")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> test() {
         return ResponseEntity.status(HttpStatus.OK).body("Heloo");
     }

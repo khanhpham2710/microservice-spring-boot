@@ -1,0 +1,27 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${DISCOVERY_HOST:localhost}:8761/eureka/
+
+spring:
+  cloud:
+    config:
+      override-system-properties: false
+
+app:
+  keycloak:
+    admin:
+      clientId: microservice
+      clientSecret: ihPE153XgWr4NM0JyrCuoCyPq36wDuIs
+    realm: microservice
+    serverUrl: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:9090}
+    issuer-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:9090}/realms/microservice
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
