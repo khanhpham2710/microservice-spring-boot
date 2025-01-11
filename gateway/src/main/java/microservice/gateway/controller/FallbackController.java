@@ -15,9 +15,15 @@ public class FallbackController {
 
     @GetMapping("/{service}")
     public ResponseEntity<String> fallback(@PathVariable String service) {
-
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(service + " service is not working");
+                .body(service + " service is temporarily unavailable");
+    }
+
+    @GetMapping
+    public ResponseEntity<String> fallbackRoute() {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body("One of the service is not working");
     }
 }

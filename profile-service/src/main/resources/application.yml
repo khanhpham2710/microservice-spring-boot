@@ -3,14 +3,3 @@ spring:
     import: optional:configserver:http://${CONFIG_HOST:localhost}:8000
   application:
     name: profile-service
-  neo4j:
-    uri: bolt://${NEO4J_HOST:localhost}:7687
-    authentication:
-      username: neo4j
-      password: password
-
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:9090}/realms/microservice

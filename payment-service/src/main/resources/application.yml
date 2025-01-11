@@ -3,22 +3,3 @@ spring:
     import: optional:configserver:http://${CONFIG_HOST:localhost}:8000
   application:
     name: payment-service
-
-  datasource:
-    url: jdbc:mysql://localhost:3305/payments?createDatabaseIfNotExist=true
-    username: root
-    password: Bin@2710
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
-  kafka:
-    producer:
-      bootstrap-servers: localhost:9092
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.type.mapping: paymentConfirmation:microservice.payment_service.notification.PaymentNotificationRequest

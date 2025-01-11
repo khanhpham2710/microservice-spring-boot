@@ -4,13 +4,13 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://admin:password@localhost:27016/notification
+      uri: mongodb://admin:password@${MONGO_HOST:localhost}:${MONGO_PORT:27016}/notification
       database: notification
       authentication-database: admin
 
   kafka:
     consumer:
-      bootstrap-servers: kafka:9092
+      bootstrap-servers: ${KAFKA_HOST:localhost}:9092
       group-id: paymentGroup,orderGroup
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
