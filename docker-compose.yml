@@ -103,78 +103,78 @@ services:
     networks:
       - microservice
 
-  config-server:
-    build:
-      context: .
-      dockerfile: config-server/Dockerfile
-    hostname: config-server
-    ports:
-      - "8000:8000"
-    networks:
-      - microservice
-    env_file:
-      - local.env
-
-  discovery-service:
-    build:
-      context: .
-      dockerfile: discovery-service/Dockerfile
-    ports:
-      - "8761:8761"
-    depends_on:
-      - config-server
-    networks:
-      - microservice
-    env_file:
-      - local.env
-
-  gateway:
-    build:
-      context: .
-      dockerfile: gateway/Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - config-server
-      - discovery-service
-      - keycloak
-      - redis
-    networks:
-      - microservice
-    env_file:
-      - local.env
-
-  authentication-service:
-    build:
-      context: .
-      dockerfile: authentication-service/Dockerfile
-    ports:
-      - "8100:8100"
-    depends_on:
-      - config-server
-      - discovery-service
-      - keycloak
-      - mysql
-    networks:
-      - microservice
-    env_file:
-      - local.env
-
-  profile-service:
-    build:
-      context: .
-      dockerfile: profile-service/Dockerfile
-    ports:
-      - "8200:8200"
-    depends_on:
-      - config-server
-      - discovery-service
-      - keycloak
-      - neo4j
-    networks:
-      - microservice
-    env_file:
-      - local.env
+#  config-server:
+#    build:
+#      context: .
+#      dockerfile: config-server/Dockerfile
+#    hostname: config-server
+#    ports:
+#      - "8000:8000"
+#    networks:
+#      - microservice
+#    env_file:
+#      - local.env
+#
+#  discovery-service:
+#    build:
+#      context: .
+#      dockerfile: discovery-service/Dockerfile
+#    ports:
+#      - "8761:8761"
+#    depends_on:
+#      - config-server
+#    networks:
+#      - microservice
+#    env_file:
+#      - local.env
+#
+#  gateway:
+#    build:
+#      context: .
+#      dockerfile: gateway/Dockerfile
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - config-server
+#      - discovery-service
+#      - keycloak
+#      - redis
+#    networks:
+#      - microservice
+#    env_file:
+#      - local.env
+#
+#  authentication-service:
+#    build:
+#      context: .
+#      dockerfile: authentication-service/Dockerfile
+#    ports:
+#      - "8100:8100"
+#    depends_on:
+#      - config-server
+#      - discovery-service
+#      - keycloak
+#      - mysql
+#    networks:
+#      - microservice
+#    env_file:
+#      - local.env
+#
+#  profile-service:
+#    build:
+#      context: .
+#      dockerfile: profile-service/Dockerfile
+#    ports:
+#      - "8200:8200"
+#    depends_on:
+#      - config-server
+#      - discovery-service
+#      - keycloak
+#      - neo4j
+#    networks:
+#      - microservice
+#    env_file:
+#      - local.env
 
 
 networks:

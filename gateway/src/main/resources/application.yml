@@ -29,16 +29,21 @@ spring:
             redis-rate-limiter.replenishRate: 10
             redis-rate-limiter.burstCapacity: 20
             redis-rate-limiter.requestedTokens: 1
-        - name: CircuitBreaker
-          args:
-            name: defaultCircuitBreaker
-            fallbackUri: forward:/fallbackRoute
+#        - name: CircuitBreaker
+#          args:
+#            name: defaultCircuitBreaker
+#            fallbackUri: forward:/fallback
       routes:
         # Authentication Service route
         - id: authentication-service
           uri: lb://AUTHENTICATION-SERVICE
           predicates:
             - Path=/api/authentication/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback/Authentication
 
         # Authentication Swagger route
         - id: authentication-service-swagger
@@ -51,6 +56,11 @@ spring:
           uri: lb://PROFILE-SERVICE
           predicates:
             - Path=/api/profile/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback/Profile
 
         # Profile Swagger route
         - id: profile-service-swagger
@@ -63,6 +73,11 @@ spring:
           uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/api/product/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback/Product
 
         # Product Swagger route
         - id: product-service-swagger
@@ -75,6 +90,11 @@ spring:
           uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/api/payment/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback/Payment
 
         # Payment Swagger route
         - id: payment-service-swagger
@@ -87,6 +107,12 @@ spring:
           uri: lb://ORDER-SERVICE
           predicates:
             - Path=/api/order/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback/Order
+
 
         # Order Swagger route
         - id: order-service-swagger
