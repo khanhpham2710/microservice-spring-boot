@@ -1,5 +1,6 @@
 package microservice.authentication_service.models;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChangePasswordRequest {
-    @NotBlank(message = "Password must not be blank")
+    @Min(value = 5, message = "Password must be at least 5 characters")
     private String password;
 
-    @NotBlank(message = "Confirm password must not be blank")
+    @Min(value = 5, message = "Password must be at least 5 characters")
     private String confirmPassword;
 }

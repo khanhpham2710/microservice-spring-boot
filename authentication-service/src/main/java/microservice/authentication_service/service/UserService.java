@@ -1,6 +1,7 @@
 package microservice.authentication_service.service;
 
 import microservice.authentication_service.models.ChangePasswordRequest;
+import microservice.authentication_service.models.LoginRequest;
 import microservice.authentication_service.models.UpdateUserRecord;
 import microservice.authentication_service.models.UserRecord;
 import microservice.authentication_service.response.LoginResponse;
@@ -19,7 +20,7 @@ public interface UserService {
     void deleteUser(String userId);
     void changePassword(String userId, ChangePasswordRequest request);
     void forgotPassword(String username);
-    LoginResponse login(UserRecord user);
+    LoginResponse login(LoginRequest request);
     String refreshToken(String token);
     UserResource getUserById(String userId);
     UserRepresentation getUserByUsername(String username);

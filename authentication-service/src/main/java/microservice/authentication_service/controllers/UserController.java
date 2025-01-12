@@ -2,10 +2,7 @@ package microservice.authentication_service.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import microservice.authentication_service.models.ChangePasswordRequest;
-import microservice.authentication_service.models.Role;
-import microservice.authentication_service.models.UpdateUserRecord;
-import microservice.authentication_service.models.UserRecord;
+import microservice.authentication_service.models.*;
 import microservice.authentication_service.response.LoginResponse;
 import microservice.authentication_service.service.RoleService;
 import microservice.authentication_service.service.UserService;
@@ -26,7 +23,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> createUser(@RequestBody UserRecord userRecord) {
+    public ResponseEntity<String> createUser(@Valid @RequestBody UserRecord userRecord) {
         userService.createUser(userRecord);
         return ResponseEntity.status(HttpStatus.CREATED).body("Check your email");
     }
@@ -38,8 +35,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody UserRecord userRecord) {
-        LoginResponse response = userService.login(userRecord);
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse response = userService.login(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }

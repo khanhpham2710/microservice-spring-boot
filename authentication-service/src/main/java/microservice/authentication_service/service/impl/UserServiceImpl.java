@@ -103,7 +103,6 @@ public class UserServiceImpl implements UserService {
         UsersResource usersResource = getUsersResource();
         try {
             UserResource userResource = usersResource.get(userId);
-            log.info(userResource.toString());
 
             userResource.sendVerifyEmail();
             UserRepresentation user = userResource.toRepresentation();
@@ -179,16 +178,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public LoginResponse login(UserRecord userRecord) {
-        UserRepresentation userRepresentation = getUserByUsername(userRecord.email());
+    public LoginResponse login(LoginRequest request) {
+        UserRepresentation userRepresentation = getUserByUsername(request.email());
         Keycloak keycloakClient = KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
                 .realm(realm)
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .grantType(OAuth2Constants.PASSWORD)
-                .username(userRecord.email())
-                .password(userRecord.password())
+                .username(request.email())
+                .password(request.password())
                 .build();
         try {
             AccessTokenResponse tokenSet = keycloakClient.tokenManager().grantToken();
