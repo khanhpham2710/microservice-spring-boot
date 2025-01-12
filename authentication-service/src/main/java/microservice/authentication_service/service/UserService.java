@@ -14,7 +14,7 @@ import java.util.List;
 public interface UserService {
 
     UserRepresentation createUser(UserRecord user);
-    void sendVerificationEmail(String userId);
+    String sendVerificationEmail(String userId);
     UserRepresentation updateUser(UpdateUserRecord request, String userId);
     void deleteUser(String userId);
     void changePassword(String userId, ChangePasswordRequest request);

@@ -3,12 +3,11 @@ package microservice.authentication_service.service.impl;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import microservice.authentication_service.models.ChangePasswordRequest;
-import microservice.authentication_service.models.KeyCloakResponse;
-import microservice.authentication_service.models.UpdateUserRecord;
-import microservice.authentication_service.models.UserRecord;
+import microservice.authentication_service.models.*;
 import microservice.authentication_service.response.LoginResponse;
 import microservice.authentication_service.service.UserService;
 import microservice.common_service.exception.AppException;
@@ -16,6 +15,7 @@ import microservice.common_service.exception.ErrorCode;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.AccessTokenResponse;
@@ -37,7 +37,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-
     @Value("${app.keycloak.realm}")
     private String realm;
     private final Keycloak keycloak;
@@ -68,8 +67,16 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+
         userRepresentations = usersResource.searchByUsername(userRecord.email(), true);
         UserRepresentation userRepresentation1 = userRepresentations.getFirst();
+
+        RolesResource rolesResource = keycloak.realm(realm).roles();
+        RoleRepresentation representation = rolesResource.get(Role.USER.toString()).toRepresentation();
+
+        UserResource user = getUserById(userRepresentation1.getId());
+        user.roles().realmLevel().add(Collections.singletonList(representation));
+
         sendVerificationEmail(userRepresentation1.getId());
         return userRepresentation1;
     }
@@ -80,6 +87,8 @@ public class UserServiceImpl implements UserService {
         userRepresentation.setUsername(userRecord.email());
         userRepresentation.setEmail(userRecord.email());
         userRepresentation.setEmailVerified(false);
+        userRepresentation.setFirstName(userRecord.firstName());
+        userRepresentation.setLastName(userRecord.lastName());
 
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setValue(userRecord.password());
@@ -90,11 +99,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendVerificationEmail(String userId) {
+    public String sendVerificationEmail(String userId) {
         UsersResource usersResource = getUsersResource();
         try {
-            usersResource.get(userId).sendVerifyEmail();
+            UserResource userResource = usersResource.get(userId);
+            log.info(userResource.toString());
+
+            userResource.sendVerifyEmail();
+            UserRepresentation user = userResource.toRepresentation();
+
+            return user.getEmail();
         } catch (Exception e) {
+            if (e instanceof NotFoundException){
+                throw new AppException(ErrorCode.USER_NOT_EXISTED);
+            }
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
         }
     }
@@ -179,6 +197,8 @@ public class UserServiceImpl implements UserService {
         } catch (Exception exception) {
             if (exception instanceof BadRequestException){
                 throw new AppException(ErrorCode.NOT_VERIFY_EMAIL);
+            } else if (exception instanceof NotAuthorizedException){
+                throw new AppException(ErrorCode.WRONG_AUTHENTICATION);
             } else {
                 exception.printStackTrace();
             }

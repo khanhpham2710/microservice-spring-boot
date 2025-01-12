@@ -12,7 +12,7 @@ app:
   keycloak:
     admin:
       clientId: microservice
-      clientSecret: ihPE153XgWr4NM0JyrCuoCyPq36wDuIs
+      clientSecret: YcqqOtQr5AwXaxCJIJucop0A5FpHjuhQ
     realm: microservice
     serverUrl: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:9090}
     issuer-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:9090}/realms/microservice

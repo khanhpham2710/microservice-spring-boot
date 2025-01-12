@@ -24,13 +24,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
-    private final RoleService roleService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody UserRecord userRecord) {
-        UserRepresentation user = userService.createUser(userRecord);
-        roleService.assignRole(user.getId(), Role.USER);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    public ResponseEntity<String> createUser(@RequestBody UserRecord userRecord) {
+        userService.createUser(userRecord);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Check your email");
     }
 
 //    @PostAuthorize("returnValue.id == #userId")
@@ -54,9 +52,9 @@ public class UserController {
     }
 
     @PutMapping("/verify-email/{id}")
-    public ResponseEntity<?> sendVerificationEmail(@PathVariable String id) {
-        userService.sendVerificationEmail(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<String> sendVerificationEmail(@PathVariable String id) {
+        String email = userService.sendVerificationEmail(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Verify email have been sent to " + email);
     }
 
     @DeleteMapping("/delete/{id}")
