@@ -10,6 +10,7 @@ spring:
         mail:
           enable: true
           to: khanhbin1998@gmail.com
+          from: "phamduykhanh@langmaster247.com"
 
   mail:
     host: smtp.hostinger.com
