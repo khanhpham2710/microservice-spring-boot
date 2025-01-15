@@ -8,7 +8,20 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="config-server" />
+        <module name="common-service" />
+        <module name="monitor-admin" />
         <module name="discovery-service" />
+      </profile>
+      <profile name="Annotation profile for post-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="post-service" />
+        <module name="chat-service" />
       </profile>
       <profile name="Annotation profile for profile-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -18,15 +31,12 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
         </processorPath>
         <module name="authentication-service" />
-        <module name="post-service" />
         <module name="payment-service" />
-        <module name="common-service" />
         <module name="product-service" />
         <module name="profile-service" />
-        <module name="chat-service" />
         <module name="order-service" />
-        <module name="gateway" />
         <module name="notification-service" />
+        <module name="gateway" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -44,6 +54,7 @@
       <module name="eureka-server" options="-parameters" />
       <module name="gateway" options="-parameters" />
       <module name="gateway-service" options="-parameters" />
+      <module name="monitor-admin" options="-parameters" />
       <module name="notification-service" options="-parameters" />
       <module name="order-service" options="-parameters" />
       <module name="payment-service" options="-parameters" />

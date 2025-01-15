@@ -1,6 +1,8 @@
 package microservice.authentication_service.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotAuthorizedException;
@@ -25,8 +27,11 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
@@ -206,7 +211,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public String refreshToken(String refreshToken) {
+    public String refreshToken(String refreshToken) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
 
         String KEYCLOAK_URL = serverUrl + "/realms/" + realm + "/protocol/openid-connect/token";
@@ -229,30 +234,38 @@ public class UserServiceImpl implements UserService {
                     String.class
             );
 
-            if (response.getStatusCode() == HttpStatus.OK) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                return objectMapper.readValue(response.getBody(), KeyCloakResponse.class).getAccessToken();
-//                JsonNode jsonNode = objectMapper.readTree(response.getBody());
-//                return jsonNode.get("access_token").asText();
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            return objectMapper.readValue(response.getBody(), KeyCloakResponse.class).getAccessToken();
+
+        } catch (HttpClientErrorException httpClientErrorException) {
+            String responseBody = httpClientErrorException.getResponseBodyAsString();
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(responseBody);
+
+            String errorDescription = jsonNode.get("error_description").asText();
+
+            if (Objects.equals(errorDescription, "Invalid refresh token")) {
+                throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
             } else {
-                throw new RuntimeException("Failed to refresh token. HTTP Status: " + response.getStatusCode());
+                return errorDescription;
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Error occurred while refreshing token: " + e.getMessage(), e);
+        } catch (Exception ex) {
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
     }
 
     @PreAuthorize("hasRole('USER')")
     @Override
     public UserResource getUserById(String userId) {
-//        if (!userId.equals(SecurityContextHolder.getContext().getAuthentication().getName())){
-//            throw new AccessDeniedException("You don't have permission to access this user");
-//        }
-        UsersResource usersResource = getUsersResource();
-        if (usersResource.get(userId) == null){
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString().contains("ROLE_ADMIN");
+        boolean checkUser = userId.equals(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        if (!isAdmin && !checkUser) {
+            throw new AccessDeniedException("You don't have permission to access this user");
         }
+
+        UsersResource usersResource = getUsersResource();
         return usersResource.get(userId);
     }
 

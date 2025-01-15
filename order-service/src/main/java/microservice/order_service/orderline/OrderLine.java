@@ -1,5 +1,6 @@
 package microservice.order_service.orderline;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,7 @@ import microservice.order_service.order.Order;
 @Entity
 @NoArgsConstructor
 @Table(name = "customer_line")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

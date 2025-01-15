@@ -17,6 +17,8 @@ public class DtoMapper {
                 .email(userDTO.getEmail())
                 .build();
     };
+
+
     public UserDTO map(User user){
         if (user == null) {
             return null;
@@ -30,6 +32,8 @@ public class DtoMapper {
                 .address(user.getAddress())
                 .gender(user.getGender())
                 .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .build();
     };
 }

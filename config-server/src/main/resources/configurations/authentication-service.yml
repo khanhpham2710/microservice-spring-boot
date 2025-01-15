@@ -7,3 +7,9 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:9090}/realms/microservice
+
+info:
+  app:
+    name: "Authentication Service"
+    description: "Authentication service of Microservice"
+    version: 1.0.0

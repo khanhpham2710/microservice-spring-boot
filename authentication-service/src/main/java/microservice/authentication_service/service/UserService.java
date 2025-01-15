@@ -1,5 +1,6 @@
 package microservice.authentication_service.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import microservice.authentication_service.models.ChangePasswordRequest;
 import microservice.authentication_service.models.LoginRequest;
 import microservice.authentication_service.models.UpdateUserRecord;
@@ -21,7 +22,7 @@ public interface UserService {
     void changePassword(String userId, ChangePasswordRequest request);
     void forgotPassword(String username);
     LoginResponse login(LoginRequest request);
-    String refreshToken(String token);
+    String refreshToken(String token) throws JsonProcessingException;
     UserResource getUserById(String userId);
     UserRepresentation getUserByUsername(String username);
     List<RoleRepresentation> getUserRoles(String userId);

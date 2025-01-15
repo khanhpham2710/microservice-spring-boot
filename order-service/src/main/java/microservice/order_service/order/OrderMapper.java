@@ -19,16 +19,23 @@ public class OrderMapper {
         return Order.builder()
                 .paymentMethod(request.paymentMethod())
                 .customerId(request.customerId())
+                .amountReceived(request.amount())
                 .build();
     }
 
     public OrderResponse fromOrder(Order order) {
-        List<OrderLineResponse> orderLines = order.getOrderLines().stream()
-                .map(mapper::toOrderLineResponse).toList();
+        List<OrderLineResponse> orderLines = null;
+
+        if (order.getOrderLines() != null){
+            orderLines = order.getOrderLines().stream()
+                    .map(mapper::toOrderLineResponse).toList();
+        }
 
         return new OrderResponse(
                 order.getId(),
                 order.getTotalAmount(),
+                order.getAmountReceived(),
+                order.getChangeAmount(),
                 order.getPaymentMethod(),
                 orderLines,
                 order.getCustomerId(),

@@ -1,10 +1,12 @@
 package microservice.notification_service.email;
 
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import microservice.common_service.model.PurchaseResponse;
+import microservice.notification_service.kafka.order.PurchaseResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -29,16 +32,20 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
+    @Value("${spring.mail.username}")
+    private String email;
+
     @Async
     public void sendPaymentSuccessEmail(
             String destinationEmail,
             String customerName,
             BigDecimal amountReceive,
             BigDecimal totalAmount
-    ) throws MessagingException {
+    ) throws MessagingException, UnsupportedEncodingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, UTF_8.name());
-        messageHelper.setFrom("phamduykhanh@langmaster247.com");
+        InternetAddress fromAddress= new InternetAddress(email, "MICROSERVICE");
+        messageHelper.setFrom(fromAddress);
 
         final String templateName = PAYMENT_CONFIRMATION.getTemplate();
 
@@ -72,11 +79,13 @@ public class EmailService {
             Long orderId,
             BigDecimal amount,
             List<PurchaseResponse> products
-    ) throws MessagingException {
+    ) throws MessagingException, UnsupportedEncodingException {
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, UTF_8.name());
-        messageHelper.setFrom("phamduykhanh@langmaster247.com");
+
+        InternetAddress fromAddress= new InternetAddress(email, "MICROSERVICE");
+        messageHelper.setFrom(fromAddress);
 
         final String templateName = ORDER_CONFIRMATION.getTemplate();
 

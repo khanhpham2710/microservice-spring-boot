@@ -2,3 +2,190 @@ server:
   port: 8080
 
 spring:
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+
+  webflux:
+    cors:
+      allowed-origins: "*"
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+      allowed-headers: "*"
+      exposed-headers: "*"
+
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            exposedHeaders: "*"
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
+      default-filters:
+        - StripPrefix=2
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 10
+            redis-rate-limiter.burstCapacity: 20
+            redis-rate-limiter.requestedTokens: 1
+      #        - name: CircuitBreaker
+      #          args:
+      #            name: defaultCircuitBreaker
+      #            fallbackUri: forward:/fallback/{serviceId}
+      routes:
+        - id: openapi
+          uri: http://localhost:${server.port}
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/?(?<segment>.*), /${segment}/v3/api-docs
+
+        # Authentication Service route
+        - id: authentication-service
+          uri: lb://AUTHENTICATION-SERVICE
+          predicates:
+            - Path=/api/authentication/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback/Authentication
+
+        # Authentication Swagger route
+        - id: authentication-service-swagger
+          uri: lb://AUTHENTICATION-SERVICE
+          predicates:
+            - Path=/aggregate/authentication-service/v3/api-docs
+
+        # Profile Service route
+        - id: profile-service
+          uri: lb://PROFILE-SERVICE
+          predicates:
+            - Path=/api/profile/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback/Profile
+
+        # Profile Swagger route
+        - id: profile-service-swagger
+          uri: lb://PROFILE-SERVICE
+          predicates:
+            - Path=/aggregate/profile-service/v3/api-docs
+
+        # Product Service route
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback/Product
+
+        # Product Swagger route
+        - id: product-service-swagger
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/aggregate/product-service/v3/api-docs
+
+        # Payment Service route
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/payment/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback/Payment
+
+        # Payment Swagger route
+        - id: payment-service-swagger
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/aggregate/payment-service/v3/api-docs
+
+        # Order Service route
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/api/order/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback/Order
+
+        # Order Swagger route
+        - id: order-service-swagger
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/aggregate/order-service/v3/api-docs
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:9090}/realms/microservice
+
+
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 20
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        minimum-number-of-calls: 5
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 10s
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 2s
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Authentication Service
+        url: /api/authentication/v3/api-docs
+      - name: Profile Service
+        url: /api/profile/v3/api-docs
+      - name: Product Service
+        url: /api/product/v3/api-docs
+      - name: Payment Service
+        url: /api/payment/v3/api-docs
+      - name: Order Service
+        url: /api/order/v3/api-docs
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+

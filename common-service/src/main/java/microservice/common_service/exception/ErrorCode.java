@@ -12,10 +12,12 @@ public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_PARAM(1000,"Multiple invalid request",HttpStatus.BAD_REQUEST),
 
+
     NOT_VERIFY_EMAIL(1001, "Please verify email", HttpStatus.FORBIDDEN),
     INVALID_PASSWORD(1002, "Password must be at least {min} characters", HttpStatus.BAD_REQUEST),
     INVALID_DOB(1003, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     PASSWORD_NOT_EQUAL(1004, "Password and confirm password must be the same", HttpStatus.BAD_REQUEST),
+    INVALID_REFRESH_TOKEN(1005, "Invalid refresh token", HttpStatus.BAD_REQUEST),
 
     USER_EXISTED(1010, "Email existed", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED(1011, "User not existed", HttpStatus.NOT_FOUND),

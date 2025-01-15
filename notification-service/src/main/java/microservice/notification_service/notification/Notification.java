@@ -22,4 +22,5 @@ public class Notification {
     private LocalDateTime notificationDate;
     private OrderConfirmation orderConfirmation;
     private PaymentConfirmation paymentConfirmation;
+    private boolean status;
 }

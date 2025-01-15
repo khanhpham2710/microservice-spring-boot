@@ -17,6 +17,8 @@ public class UserDTO {
     private String language;
     private String email;
     private Address address;
+    private String firstName;
+    private String lastName;
     private Role role;
     private LocalDate dob;
     private String countryIso2;

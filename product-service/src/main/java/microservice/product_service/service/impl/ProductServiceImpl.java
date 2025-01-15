@@ -3,13 +3,14 @@ package microservice.product_service.service.impl;
 import lombok.RequiredArgsConstructor;
 import microservice.common_service.exception.AppException;
 import microservice.common_service.exception.NotFoundException;
-import microservice.common_service.model.PurchaseResponse;
 import microservice.product_service.dto.product.ProductRequest;
 import microservice.product_service.dto.product.ProductResponse;
 import microservice.product_service.dto.purchase.PurchaseRequest;
 import microservice.product_service.exception.PurchaseException;
 import microservice.product_service.mapper.ProductMapper;
 import microservice.product_service.model.Product;
+import microservice.product_service.model.PurchaseResponse;
+import microservice.product_service.model.ReturnRequest;
 import microservice.product_service.repository.ProductRepository;
 import microservice.product_service.service.ProductService;
 import org.springframework.stereotype.Service;
@@ -76,5 +77,26 @@ public class ProductServiceImpl implements ProductService {
             purchasedProducts.add(productMapper.toPurchaseResponse(product, purchaseRequest.quantity()));
         }
         return purchasedProducts;
+    }
+
+    @Override
+    public void returnProducts(List<ReturnRequest> request) {
+        List<Integer> productIds = request
+                .stream()
+                .map(ReturnRequest::productId)
+                .toList();
+        List<Product> storedProducts = productRepository.findAllByIdInOrderById(productIds);
+        List<ReturnRequest> sortedRequest = request
+                .stream()
+                .sorted(Comparator.comparing(ReturnRequest::productId))
+                .toList();
+
+        for (int i = 0; i < storedProducts.size(); i++) {
+            Product product = storedProducts.get(i);
+            ReturnRequest returnRequest = sortedRequest.get(i);
+            double newAvailableQuantity = product.getAvailableQuantity() + returnRequest.quantity();
+            product.setAvailableQuantity(newAvailableQuantity);
+            productRepository.save(product);
+        }
     }
 }

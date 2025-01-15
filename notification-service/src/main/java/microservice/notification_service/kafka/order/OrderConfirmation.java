@@ -1,10 +1,10 @@
 package microservice.notification_service.kafka.order;
 
 import microservice.common_service.enums.PaymentMethod;
-import microservice.common_service.model.PurchaseResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
+
 
 public record OrderConfirmation(
         Long id,

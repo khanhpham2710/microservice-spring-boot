@@ -2,11 +2,11 @@ package microservice.product_service.mapper;
 
 import lombok.RequiredArgsConstructor;
 import microservice.common_service.exception.NotFoundException;
-import microservice.common_service.model.PurchaseResponse;
 import microservice.product_service.dto.product.ProductRequest;
 import microservice.product_service.dto.product.ProductResponse;
 import microservice.product_service.model.Category;
 import microservice.product_service.model.Product;
+import microservice.product_service.model.PurchaseResponse;
 import microservice.product_service.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 

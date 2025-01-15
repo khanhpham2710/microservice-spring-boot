@@ -1,4 +1,4 @@
-package microservice.common_service.model;
+package microservice.product_service.model;
 
 import java.math.BigDecimal;
 

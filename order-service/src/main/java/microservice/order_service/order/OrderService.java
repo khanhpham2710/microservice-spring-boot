@@ -1,12 +1,15 @@
 package microservice.order_service.order;
 
 import lombok.RequiredArgsConstructor;
+import microservice.common_service.exception.AppException;
+import microservice.common_service.exception.ErrorCode;
 import microservice.common_service.exception.NotFoundException;
-import microservice.common_service.model.PurchaseResponse;
 import microservice.order_service.customer.CustomerClient;
 import microservice.order_service.customer.CustomerResponse;
+import microservice.order_service.exception.OrderException;
 import microservice.order_service.kafka.OrderConfirmation;
 import microservice.order_service.kafka.OrderProducer;
+import microservice.order_service.kafka.PurchaseResponse;
 import microservice.order_service.orderline.*;
 import microservice.order_service.payment.PaymentClient;
 import microservice.order_service.payment.PaymentRequest;
@@ -35,11 +38,9 @@ public class OrderService {
 
     private final OrderProducer orderProducer;
 
-
-
     @PreAuthorize("hasRole('USER')")
     @Transactional
-    public Order createOrder(OrderRequest request) throws Exception {
+    public OrderResponse createOrder(OrderRequest request) throws Exception {
         CustomerResponse customer = customerClient.findCustomerById(request.customerId())
                 .orElseThrow(() -> new NotFoundException(
                         String.format("No customer found with the provided ID: %s", request.customerId())));
@@ -60,11 +61,20 @@ public class OrderService {
 
             orderLineRepository.save(orderLine);
         }
+
         BigDecimal totalAmount = purchasedProducts.stream()
                 .map(PurchaseResponse::price)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         order.setTotalAmount(totalAmount);
+
+        BigDecimal changeAmount = request.amount().subtract(totalAmount);
+        if (changeAmount.compareTo(BigDecimal.ZERO) < 0){
+                productClient.returnProducts(purchasedProducts);
+            throw new OrderException("Not enough money. The total amount is " + totalAmount);
+        }
+
+        order.setChangeAmount(request.amount().subtract(totalAmount));
 
         PaymentRequest paymentRequest = new PaymentRequest(
                 totalAmount,
@@ -77,17 +87,19 @@ public class OrderService {
         paymentClient.requestOrderPayment(paymentRequest);
 
         orderProducer.sendOrderConfirmation(
-                new OrderConfirmation(
-                        order.getId(),
-                        totalAmount,
-                        request.amount(),
-                        request.paymentMethod(),
-                        customer,
-                        purchasedProducts
-                )
+                OrderConfirmation.builder()
+                        .id(order.getId())
+                        .customer(customer)
+                        .order(order)
+                        .amountReceive(request.amount())
+                        .totalAmount(totalAmount)
+                        .paymentMethod(request.paymentMethod())
+                        .status(false)
+                        .products(purchasedProducts)
+                        .build()
         );
 
-        return repository.save(order);
+        return mapper.fromOrder(repository.save(order));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

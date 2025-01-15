@@ -1,5 +1,6 @@
 package microservice.order_service.order;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 import microservice.common_service.enums.PaymentMethod;
@@ -21,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "customer_orders")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +30,12 @@ public class Order {
 
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
+
+    @Column(name = "amount_received")
+    private BigDecimal amountReceived;
+
+    @Column(name = "change_amount")
+    private BigDecimal changeAmount;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;

@@ -27,8 +27,8 @@ public class PaymentService {
                         request.totalAmount(),
                         request.amountReceive(),
                         request.paymentMethod(),
-                        request.customer().firstname(),
-                        request.customer().lastname(),
+                        request.customer().firstName(),
+                        request.customer().lastName(),
                         request.customer().email()
                 )
         );

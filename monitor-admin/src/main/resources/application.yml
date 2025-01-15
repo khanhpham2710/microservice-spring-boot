@@ -1,0 +1,30 @@
+spring:
+  config:
+    import: optional:configserver:http://${CONFIG_HOST:localhost}:8000
+  application:
+    name: monitor-admin
+
+  boot:
+    admin:
+      notify:
+        mail:
+          enable: true
+          to: khanhbin1998@gmail.com
+
+  mail:
+    host: smtp.hostinger.com
+    port: 587
+    username: phamduykhanh@langmaster247.com
+    password: Bin@2710
+    properties:
+      mail:
+        smtp:
+          trust: "*"
+        auth: true
+        starttls:
+          enabled: true
+        connectiontimeout: 5000
+        timeout: 3000
+        writetimeout: 5000
+    default-encoding: UTF-8
+    from: "Microservice"

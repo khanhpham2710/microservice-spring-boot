@@ -11,7 +11,9 @@ import java.util.List;
 @JsonInclude(Include.NON_EMPTY)
 public record OrderResponse(
         Long id,
-        BigDecimal amount,
+        BigDecimal totalAmount,
+        BigDecimal amountReceived,
+        BigDecimal changeAmount,
         PaymentMethod paymentMethod,
         List<OrderLineResponse> orderlines,
         String customerId,

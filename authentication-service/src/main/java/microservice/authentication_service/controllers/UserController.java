@@ -1,12 +1,17 @@
 package microservice.authentication_service.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import microservice.authentication_service.models.*;
 import microservice.authentication_service.response.LoginResponse;
 import microservice.authentication_service.service.RoleService;
 import microservice.authentication_service.service.UserService;
+import microservice.common_service.exception.AppException;
+import microservice.common_service.exception.ErrorCode;
 import microservice.common_service.response.BaseResponse;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +36,15 @@ public class UserController {
 //    @PostAuthorize("returnValue.id == #userId")
     @GetMapping("/{userId}")
     public UserRepresentation getUserById(@PathVariable String userId) {
-        return userService.getUserById(userId).toRepresentation();
+        try{
+            return userService.getUserById(userId).toRepresentation();
+        }catch (Exception exception){
+            if (exception instanceof NotFoundException){
+                throw new AppException(ErrorCode.USER_NOT_EXISTED);
+            } else {
+                throw exception;
+            }
+        }
     }
 
     @PostMapping("/login")
@@ -42,7 +55,7 @@ public class UserController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<String> refreshToken(@RequestParam String token) {
+    public ResponseEntity<String> refreshToken(@RequestParam String token) throws JsonProcessingException {
         String user = userService.refreshToken(token);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(user);

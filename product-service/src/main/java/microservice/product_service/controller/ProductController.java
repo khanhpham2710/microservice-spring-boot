@@ -2,10 +2,11 @@ package microservice.product_service.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import microservice.common_service.model.PurchaseResponse;
 import microservice.product_service.dto.product.ProductRequest;
 import microservice.product_service.dto.product.ProductResponse;
 import microservice.product_service.dto.purchase.PurchaseRequest;
+import microservice.product_service.model.PurchaseResponse;
+import microservice.product_service.model.ReturnRequest;
 import microservice.product_service.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ProductResponse> createProduct(@RequestBody @Valid ProductRequest request) {
         return ResponseEntity.ok(productService.createProduct(request));
     }
@@ -33,6 +33,13 @@ public class ProductController {
         return ResponseEntity.ok(productService.purchaseProducts(request));
     }
 
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/return")
+    public ResponseEntity<String> returnProducts(@RequestBody List<ReturnRequest> request) {
+        productService.returnProducts(request);
+        return ResponseEntity.ok("Return products successfully");
+    }
+
     @GetMapping("/{product-id}")
     public ResponseEntity<ProductResponse> findById(
             @PathVariable("product-id") Integer productId
@@ -40,7 +47,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.findById(productId));
     }
 
-    @GetMapping
+    @GetMapping("/findAll")
     public ResponseEntity<List<ProductResponse>> findAll() {
         return ResponseEntity.ok(productService.findAll());
     }
