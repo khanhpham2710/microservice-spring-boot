@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_DOB(1003, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     PASSWORD_NOT_EQUAL(1004, "Password and confirm password must be the same", HttpStatus.BAD_REQUEST),
     INVALID_REFRESH_TOKEN(1005, "Invalid refresh token", HttpStatus.BAD_REQUEST),
+    INACTIVE_REFRESH_TOKEN(1006, "Inactive refresh token", HttpStatus.BAD_REQUEST),
 
     USER_EXISTED(1010, "Email existed", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED(1011, "User not existed", HttpStatus.NOT_FOUND),

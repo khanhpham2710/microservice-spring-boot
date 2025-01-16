@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
         KeycloakUser keycloakUser = authProxy.getUserById(userId);
 
         User newUser = User.builder()
+                .userName(keycloakUser.getUserName())
                 .firstName(keycloakUser.getFirstName())
                 .lastName(keycloakUser.getLastName())
                 .id(userId)
@@ -52,6 +53,7 @@ public class UserServiceImpl implements UserService {
                 .following(new HashSet<>())
                 .friends(new HashSet<>())
                 .build();
+
         return userRepository.save(newUser);
     }
 
@@ -59,7 +61,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(String userId, UserCreationRequest request) {
         User existingUser = getById(userId);
-        UpdateUserRecord record = new UpdateUserRecord(request.getFirstName(),request.getLastName());
+        UpdateUserRecord record = new UpdateUserRecord(
+                request.getUserName(),
+                request.getFirstName(),
+                request.getLastName());
         authProxy.updateUser(record,userId);
 
         existingUser.setFirstName(request.getFirstName());

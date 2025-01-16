@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
     private UserRepresentation getUserRepresentation(UserRecord userRecord) {
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setEnabled(true);
-        userRepresentation.setUsername(userRecord.email());
+        userRepresentation.setUsername(userRecord.userName());
         userRepresentation.setEmail(userRecord.email());
         userRepresentation.setEmailVerified(false);
         userRepresentation.setFirstName(userRecord.firstName());
@@ -130,6 +130,7 @@ public class UserServiceImpl implements UserService {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
 
+        existingUser.setUsername(request.userName());
         existingUser.setFirstName(request.firstName());
         existingUser.setLastName(request.lastName());
         userResource.get(userId).update(existingUser);
@@ -184,14 +185,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        UserRepresentation userRepresentation = getUserByUsername(request.email());
+        UserRepresentation userRepresentation = getUser(request.emailOrUsername());
+
         Keycloak keycloakClient = KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
                 .realm(realm)
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .grantType(OAuth2Constants.PASSWORD)
-                .username(request.email())
+                .username(userRepresentation.getUsername())
                 .password(request.password())
                 .build();
         try {
@@ -247,6 +249,8 @@ public class UserServiceImpl implements UserService {
 
             if (Objects.equals(errorDescription, "Invalid refresh token")) {
                 throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
+            } else if (Objects.equals(errorDescription, "Token is not active")) {
+                throw new AppException(ErrorCode.INACTIVE_REFRESH_TOKEN);
             } else {
                 return errorDescription;
             }
@@ -271,15 +275,20 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserRepresentation getUserByUsername(String username) {
+    public UserRepresentation getUser(String username) {
         UsersResource usersResource = getUsersResource();
-        List<UserRepresentation> userRepresentations = usersResource.searchByUsername(username, true);
+        List<UserRepresentation> usersUsername = usersResource.searchByUsername(username, true);
+        List<UserRepresentation> usersEmail = usersResource.searchByEmail(username, true);
 
-        if (userRepresentations.isEmpty()) {
+        if (usersUsername.isEmpty() && usersEmail.isEmpty()) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
 
-        return userRepresentations.getFirst();
+        if (usersUsername.isEmpty()){
+           return usersEmail.getFirst();
+        } else {
+            return usersUsername.getFirst();
+        }
     }
 
     @Override

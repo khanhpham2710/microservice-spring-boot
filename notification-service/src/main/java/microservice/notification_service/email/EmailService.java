@@ -28,7 +28,6 @@ import static microservice.notification_service.email.EmailTemplates.PAYMENT_CON
 @Slf4j
 @RequiredArgsConstructor
 public class EmailService {
-
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 

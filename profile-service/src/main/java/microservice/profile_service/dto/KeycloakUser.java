@@ -11,9 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KeycloakUser {
-
     protected String id;
     protected String origin;
+    protected String userName;
     protected String email;
     protected Boolean enabled;
     protected Boolean emailVerified;

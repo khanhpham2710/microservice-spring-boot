@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class UserCreationRequest {
+    private String userName;
     private String firstName;
     private String lastName;
     private String language;

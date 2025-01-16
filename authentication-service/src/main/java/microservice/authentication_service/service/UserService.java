@@ -24,7 +24,7 @@ public interface UserService {
     LoginResponse login(LoginRequest request);
     String refreshToken(String token) throws JsonProcessingException;
     UserResource getUserById(String userId);
-    UserRepresentation getUserByUsername(String username);
+    UserRepresentation getUser(String username);
     List<RoleRepresentation> getUserRoles(String userId);
     List<GroupRepresentation> getUserGroups(String userId);
 }

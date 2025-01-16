@@ -7,12 +7,21 @@ spring:
   cloud:
     config:
       override-system-properties: false
+  sleuth:
+    sampler:
+      probability: 1.0
+  zipkin:
+    baseUrl: http://${ZIPKIN_HOST:localhost}:9411
+
+logging:
+  level:
+    root: INFO
 
 app:
   keycloak:
     admin:
       clientId: microservice
-      clientSecret: ${KEYCLOAK_ID:YcqqOtQr5AwXaxCJIJucop0A5FpHjuhQ}
+      clientSecret: ${KEYCLOAK_ID:AwN1jMOWGrWtAxPHRjnj6oMmT1keH285}
     realm: microservice
     serverUrl: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:9090}
 
@@ -24,8 +33,10 @@ management:
   endpoint:
     health:
       show-details: always
-
   info:
     env:
       enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
 

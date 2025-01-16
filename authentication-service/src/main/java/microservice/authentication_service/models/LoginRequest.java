@@ -2,5 +2,5 @@ package microservice.authentication_service.models;
 
 import jakarta.validation.constraints.Email;
 
-public record LoginRequest(@Email String email, String password) {
+public record LoginRequest(@Email String emailOrUsername, String password) {
 }

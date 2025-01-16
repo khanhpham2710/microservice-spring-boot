@@ -12,18 +12,7 @@
         <module name="monitor-admin" />
         <module name="discovery-service" />
       </profile>
-      <profile name="Annotation profile for post-service" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
-        </processorPath>
-        <module name="post-service" />
-        <module name="chat-service" />
-      </profile>
-      <profile name="Annotation profile for profile-service" enabled="true">
+      <profile name="Annotation profile for order-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -31,9 +20,11 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
         </processorPath>
         <module name="authentication-service" />
+        <module name="post-service" />
         <module name="payment-service" />
         <module name="product-service" />
         <module name="profile-service" />
+        <module name="chat-service" />
         <module name="order-service" />
         <module name="notification-service" />
         <module name="gateway" />

@@ -48,12 +48,12 @@ public class NotificationsConsumer {
         log.info(paymentConfirmation.toString());
 
         String customerName = paymentConfirmation.firstName() + " " + paymentConfirmation.lastName();
-//        emailService.sendPaymentSuccessEmail(
-//                paymentConfirmation.customerEmail(),
-//                customerName,
-//                paymentConfirmation.amountReceive(),
-//                paymentConfirmation.totalAmount()
-//        );
+        emailService.sendPaymentSuccessEmail(
+                paymentConfirmation.customerEmail(),
+                customerName,
+                paymentConfirmation.amountReceive(),
+                paymentConfirmation.totalAmount()
+        );
 
         notification.setStatus(true);
         repository.save(notification);
@@ -96,13 +96,13 @@ public class NotificationsConsumer {
 
         String customerName = orderConfirmation.customer().firstName() + " " + orderConfirmation.customer().lastName();
 
-//        emailService.sendOrderConfirmationEmail(
-//                orderConfirmation.customer().email(),
-//                customerName,
-//                orderConfirmation.id(),
-//                orderConfirmation.totalAmount(),
-//                orderConfirmation.products()
-//        );
+        emailService.sendOrderConfirmationEmail(
+                orderConfirmation.customer().email(),
+                customerName,
+                orderConfirmation.id(),
+                orderConfirmation.totalAmount(),
+                orderConfirmation.products()
+        );
 
         notification.setStatus(true);
         repository.save(notification);
