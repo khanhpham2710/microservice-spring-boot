@@ -42,36 +42,40 @@ Xử lý và lưu trữ các thông báo từ Kafka để gửi email cho ngư�
 Giám sát và quản lý tất cả các microservice. Hệ thống sẽ gửi email thông báo khi có dịch vụ nào bị offline.
 
 ### 12. **Tracing với Zipkin**
-Sử dụng Zipkin để theo dõi các cuộc gọi giữa các dịch vụ. Các dịch vụ liên lạc qua OpenFeign sẽ được ghi lại trong cùng một trace, nhưng khi sử dụng Kafka, các trace sẽ tách biệt.
+Sử dụng Zipkin để theo dõi các cuộc gọi giữa các dịch vụ. Các dịch vụ liên lạc qua OpenFeign sẽ được ghi lại trong cùng một trace, nhưng khi sử dụng Kafka, các trace sẽ tách biệt. Kafka sẽ dùng Kafka UI pull về từ docker để quản lý.
 
 ---
 
 ## Hạn Chế
 
 ### 1. **Kết nối Chat Service với các Microservices khác**
-Chat Service hiện tại đã hoàn thành, nhưng chưa được tích hợp với các microservices khác trong hệ thống, như Profile Service để lấy thông tin người dùng hoặc Notification Service để gửi thông báo. Điều này khiến Chat Service hoạt động như phần riêng nằm ngoài hệ thống
+Chat Service hiện tại đã hoàn thành với WebSocket, đăng ảnh lên Cloudinary, frontend là ReactJS với Tailwind, nhưng chưa được tích hợp với các microservices khác trong hệ thống, như Profile Service để lấy thông tin người dùng hoặc Notification Service để gửi thông báo. Điều này khiến Chat Service hoạt động như phần riêng nằm ngoài hệ thống
 
-### 2. **Swagger tại port Gateway không hiển thị khi chạy Docker**
+### 2. **Post Service**
+Đang trong giai đoạn kế hoạch. Định sử dụng PostgreSQL, Cloudinary
+
+### 3. **Swagger tại port Gateway không hiển thị khi chạy Docker**
 Khi chạy dịch vụ trên Docker, Swagger tại port Gateway hiển thị các endpoint nhưng không thể gửi request được phải vào từng port riêng của từng service để gửi request
 
-
-### 3. **Tracing giữa các dịch vụ qua Kafka không đồng bộ**
+### 4. **Tracing giữa các dịch vụ qua Kafka không đồng bộ**
 Khi các dịch vụ giao tiếp thông qua OpenFeign, tracing hoạt động tốt và các cuộc gọi được ghi lại trong cùng một trace. Tuy nhiên, khi các dịch vụ giao tiếp qua Kafka, các trace lại được tách biệt nên khó trace Notification Service.
 
+### 5. **Kafka hiện chỉ có 1 broker**
+Do là dự án cá nhân nên chỉ tạo 1 Kafka broker qua docker. 
 
-### 5. **Chưa sử dụng các công cụ hỗ trợ mở rộng và cân bằng tải**
+### 6. **Chưa sử dụng các công cụ hỗ trợ mở rộng và cân bằng tải**
 - Mặc dù hệ thống đã sử dụng các công nghệ như Spring Cloud Gateway và Redis để quản lý tần suất và routing, nhưng khả năng mở rộng và cân bằng tải giữa các dịch vụ chưa được tối ưu, đặc biệt là khi có lượng truy cập cao.
 - Đang nghiên cứu các công cụ như Nginx hoặc Kubernetes.
 
-### 6. **Chưa hoàn thiện tính năng Email Notification**
+### 7. **Chưa hoàn thiện tính năng Email Notification**
 - Dã viết logic quản lý và thử lại gửi và nhận Kafka nhưng chưa thử nghiệm nhiều
 - Cũng chưa thử nghiệm nhiều quản lý và thử lại khi Notification Service gửi email thất bại.
   
-### 7. **Cải thiện hiệu suất Redis Rate Limiting**
+### 8. **Cải thiện hiệu suất Redis Rate Limiting**
 - Chưa thử nghiệm Redis Rate Limiting ở gateway nhiều. Sử dụng cấu hình tìm được trên mạng
 
-### 8. **Chưa viết test**
+### 9. **Chưa viết test**
 - Chủ yếu test thông qua postman với swagger. Chưa viết Unit Test và Intergation Test.
 
-### 9. **Chưa có Observability**
-- Đang nghiên cứu Grafana Stack (Grafana, Loki, and Tempo)
+### 10. **Chưa có Observability**
+- Đa10g nghiên cứu Grafana Stack (Grafana, Loki, and Tempo)
