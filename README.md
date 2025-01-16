@@ -66,7 +66,7 @@ Khi các dịch vụ giao tiếp thông qua OpenFeign, tracing hoạt động t�
 ### 6. **Chưa hoàn thiện tính năng Email Notification**
 - Dã viết logic quản lý và thử lại gửi và nhận Kafka nhưng chưa thử nghiệm nhiều
 - Cũng chưa thử nghiệm nhiều quản lý và thử lại khi Notification Service gửi email thất bại.
--  
+  
 ### 7. **Cải thiện hiệu suất Redis Rate Limiting**
 - Chưa thử nghiệm Redis Rate Limiting ở gateway nhiều. Sử dụng cấu hình tìm được trên mạng
 
