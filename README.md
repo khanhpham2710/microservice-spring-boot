@@ -67,9 +67,10 @@ Do là dự án cá nhân nên chỉ tạo 1 Kafka broker qua docker.
 - Mặc dù hệ thống đã sử dụng các công nghệ như Spring Cloud Gateway và Redis để quản lý tần suất và routing, nhưng khả năng mở rộng và cân bằng tải giữa các dịch vụ chưa được tối ưu, đặc biệt là khi có lượng truy cập cao.
 - Đang nghiên cứu các công cụ như Nginx hoặc Kubernetes.
 
-### 7. **Chưa hoàn thiện tính năng Email Notification**
-- Dã viết logic quản lý và thử lại gửi và nhận Kafka nhưng chưa thử nghiệm nhiều
+### 7. **Chưa hoàn thiện tính năng Email**
+- Đã viết logic quản lý và thử lại gửi và nhận Kafka nhưng chưa thử nghiệm nhiều.
 - Cũng chưa thử nghiệm nhiều quản lý và thử lại khi Notification Service gửi email thất bại.
+- Authentication service sử dụng tính năng gửi email xác thực của keycloak nên khi chạy docker sẽ sử dụng tên host của container nên link verify không dùng được và chưa nghiên cứu ra cách chỉnh sửa email của keycloak.
   
 ### 8. **Cải thiện hiệu suất Redis Rate Limiting**
 - Chưa thử nghiệm Redis Rate Limiting ở gateway nhiều. Sử dụng cấu hình tìm được trên mạng
