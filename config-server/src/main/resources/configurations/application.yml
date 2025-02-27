@@ -7,11 +7,6 @@ spring:
   cloud:
     config:
       override-system-properties: false
-  sleuth:
-    sampler:
-      probability: 1.0
-  zipkin:
-    baseUrl: http://${ZIPKIN_HOST:localhost}:9411
 
 logging:
   level:
@@ -21,7 +16,7 @@ app:
   keycloak:
     admin:
       clientId: microservice
-      clientSecret: ${KEYCLOAK_ID:AwN1jMOWGrWtAxPHRjnj6oMmT1keH285}
+      clientSecret: ${KEYCLOAK_ID:rucZJ7QN0JBCP7rMt9TYN9zkv8UGVCw5}
     realm: microservice
     serverUrl: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:9090}
 
@@ -39,4 +34,8 @@ management:
   tracing:
     sampling:
       probability: 1.0
+    enabled: true
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
 

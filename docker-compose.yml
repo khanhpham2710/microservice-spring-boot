@@ -90,17 +90,24 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
     networks:
       - microservice
+    healthcheck:
+      test: [ "CMD-SHELL", "kafka-topics --list --bootstrap-server localhost:9092" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     ports:
       - "8086:8080"
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     environment:
-      KAFKA_CLUSTERS_NAME: local
-      KAFKA_CLUSTERS_BOOTSTRAPSERVERS: kafka:29092
-      KAFKA_CLUSTERS_SCHEMAREGISTRY: http://schema-registry:8081
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+#      KAFKA_CLUSTERS_SCHEMAREGISTRY: http://schema-registry:8081
       DYNAMIC_CONFIG_ENABLED: 'true'
     networks:
       - microservice
@@ -131,11 +138,19 @@ services:
      hostname: config-server
      ports:
        - "8000:8000"
+     depends_on:
+       - zipkin
      networks:
        - microservice
      restart: on-failure
      env_file:
        - local.env
+     healthcheck:
+       test: [ "CMD", "curl", "-f", "http://localhost:8000/actuator/health" ]
+       interval: 10s
+       retries: 5
+       start_period: 20s
+       timeout: 5s
 
   discovery-service:
     build:
@@ -144,7 +159,8 @@ services:
     ports:
       - "8761:8761"
     depends_on:
-      - config-server
+      config-server:
+          condition: service_healthy
     restart: on-failure
     networks:
       - microservice
@@ -288,7 +304,6 @@ services:
       - microservice
     env_file:
       - local.env
-
 
 
 networks:

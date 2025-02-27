@@ -65,6 +65,8 @@ public class UserServiceImpl implements UserService {
                 request.getUserName(),
                 request.getFirstName(),
                 request.getLastName());
+        log.info("sdsad{}", record.toString());
+
         authProxy.updateUser(record,userId);
 
         existingUser.setFirstName(request.getFirstName());

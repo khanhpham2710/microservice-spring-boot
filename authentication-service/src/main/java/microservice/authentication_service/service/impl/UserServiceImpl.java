@@ -130,6 +130,7 @@ public class UserServiceImpl implements UserService {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
 
+
         existingUser.setUsername(request.userName());
         existingUser.setFirstName(request.firstName());
         existingUser.setLastName(request.lastName());
