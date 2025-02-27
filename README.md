@@ -84,4 +84,4 @@ Do là dự án cá nhân nên chỉ tạo 1 Kafka broker qua docker.
 - Chủ yếu test thông qua postman với swagger. Chưa viết Unit Test và Intergation Test.
 
 ### 11. **Chưa có Observability**
-- Đa10g nghiên cứu Grafana Stack (Grafana, Loki, and Tempo)
+- Đang nghiên cứu Grafana Stack (Grafana, Loki, and Tempo)
